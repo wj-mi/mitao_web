@@ -5,12 +5,11 @@ from . import products_view
 
 
 urlpatterns = [
-    # ex: /polls/
-    path('', products_view.ProductsView.as_view(), name='index'),
-    # ex: /polls/5/
-    path('<int:question_id>/', views.detail, name='detail'),
-    # ex: /polls/5/results/
-    path('<int:question_id>/results/', views.results, name='results'),
-    # ex: /polls/5/vote/
-    path('<int:question_id>/vote/', views.vote, name='vote'),
+    # ex: /mitao_star/
+    path('', products_view.ProductsListView.as_view(), name='index'),
+    # ex: /mitao_star/detail/
+    path('detail/<str:p_id>/', products_view.ProductView.as_view(), name='detail'),
+    path("get_user_orders/<str:user_id>/", views.get_user_orders),
+    path("order_detail/<str:order_id>/", products_view.OrderView.as_view()),
+
 ]

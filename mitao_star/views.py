@@ -1,27 +1,19 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader
+from django.core import serializers
 
-from .models import Question
-# Create your views here.
+from .models import Orders
 
-
-def index(request):
-    atest_question_list = Question.objects.order_by('-pub_date')[:5]
-    template = loader.get_template('polls/index.html')
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
-
-def detail(request, question_id):
-    return HttpResponse("You're looking at question %s." % question_id)
+"""用户信息"""
 
 
-def results(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
-
-
-def vote(request, question_id):
-    return HttpResponse("You're voting on question %s." % question_id)
+def get_user_orders(request, user_id):
+    """获取用户所有订单信息
+    user_id： wx user id
+    """
+    data = {}
+    orders = Orders.objects.filter(user=user_id)
+    data["result"] = "success"
+    data["data"] = serializers.serialize("json",orders)
+    return JsonResponse(data)

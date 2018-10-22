@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.db import models
 from django.utils import timezone
@@ -9,11 +10,6 @@ from django.utils import timezone
 
 
 # ------------product ----------------
-# class Tag(models.Model):
-#     """product tag"""
-#     tag_id = models.IntegerField("unique tag id")
-#     intro = models.CharField("tag 描述")
-
 
 class Products(models.Model):
     """product info"""
@@ -31,21 +27,15 @@ class Products(models.Model):
         return "Product id {}, name: {}".format(self.product_id, self.name)
 
 
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
+class Orders(models.Model):
+    """订单"""
+    order_id = models.CharField("unique order id", unique=True, default=uuid.uuid4().hex, max_length=40)
+    products = models.ManyToManyField(Products)
+    user = models.CharField(help_text=" 微信用户ID", max_length=50)
+    create_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
+    status = models.IntegerField(default=0, help_text=" 状态0 待支付，1：服务中 2：待评价 3：已完成 -1：删除 ")
+    is_delete = models.BooleanField(default=False, help_text="False:未关闭，正常订单")
 
-    def __str__(self):
-        return self.question_text
-
-    def was_published_recently(self):
-        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
-
-
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.choice_text
+    class Meta:
+        db_table = "Orders"     # db table name
